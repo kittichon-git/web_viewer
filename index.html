@@ -401,33 +401,24 @@
     <style>
         body { font-family: 'Sarabun', sans-serif; background-color: #ffffff; margin: 0; padding: 0; color: #000000; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
         @media print { body { display: none !important; } }
-        .container { width: 100%; overflow-x: auto; }
-        table { border-collapse: collapse; width: fit-content; min-width: 100%; table-layout: fixed; background-color: #ffffff; }
-        thead th { background-color: #ffffff; border: 1px solid #c0c0c0; color: #444; font-size: 11px; font-weight: normal; height: 20px; text-align: center; vertical-align: middle; }
-        td { border: 1px solid #c0c0c0; padding: 4px 10px; word-wrap: break-word; overflow: hidden; font-size: 13pt; line-height: 1.4; vertical-align: middle; }
-        tr td:first-child { background-color: #ffffff; color: #444; text-align: center; font-size: 11px; width: 45px !important; border: 1px solid #c0c0c0; }
+        .container { width: 100%; overflow-x: auto; padding: 20px; }
+        table { border-collapse: collapse; width: fit-content; min-width: 100%; table-layout: fixed; background-color: #ffffff; margin: 0 auto; }
+        td { border: 1px solid #e2e2e2; padding: 8px 10px; word-wrap: break-word; overflow: hidden; font-size: 13pt; line-height: 1.5; vertical-align: middle; }
         .link-fake { color: #1155cc; text-decoration: underline; cursor: pointer; }
         .link-fake:hover { color: #d11111; }
         /* Headers */
-        .header-new { background-color: #FB8C00; color: white; font-weight: bold; font-size: 20pt; padding: 20px !important; }
-        .subheader-new { background-color: #f3f3f3; color: #FB8C00; font-weight: bold; text-align: left; }
-        .date-group-new { background-color: #f3f3f3; font-weight: bold; font-size: 14pt; }
-        .data-row-new { background-color: #FFF2CC; }
-        .header-all { background-color: #03A9F4; color: white; font-weight: bold; font-size: 20pt; padding: 20px !important; }
-        .subheader-all { background-color: #f3f3f3; color: #03A9F4; font-weight: bold; }
-        .date-group-all { background-color: #E1F5FE; font-weight: bold; font-size: 14pt; }
-        .data-row-all { background-color: #ffffff; }
-        .data-row-all:nth-child(even) { background-color: #f8f9fa; }
+        .header-new { background-color: #ff9900; color: white; font-weight: bold; }
+        .date-group-new { background-color: #eeeeee; font-weight: bold; }
+        .header-all { background-color: #03A9F4; color: white; font-weight: bold; }
+        .date-group-all-row { background-color: #E1F5FE; font-weight: bold; }
         /* Urgent */
-        .header-urgent { background-color: #c00000; color: white; font-weight: bold; font-size: 20pt; padding: 20px !important; text-align: left; }
-        .subheader-urgent { background-color: #ffffff; color: #c00000; font-weight: bold; text-align: left; border: 1px solid #c0c0c0; }
-        .date-group-urgent { background-color: #ffffff; font-weight: bold; font-size: 14pt; border: 1px solid #c0c0c0; }
+        .header-urgent { background-color: #c00000; color: white; font-weight: bold; }
+        .date-group-urgent { background-color: #eeeeee; font-weight: bold; }
         .highlight-urgent { background-color: #fce4ec; }
-        tr.urgent-row td:first-child { text-align: center; width: 45px !important; border: none; background-color: white; }
         
         #pdfViewerWrapper { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 99999; }
         #pdfFrame { width: 100%; height: 100%; border: none; }
-        .back-btn { position: fixed; top: 15px; left: 15px; padding: 10px 20px; background: #FB8C00; color: white; border-radius: 30px; cursor: pointer; z-index: 100001; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); border: 2px solid white; }
+        .back-btn { position: fixed; top: 15px; left: 15px; padding: 10px 20px; background: #ff9900; color: white; border-radius: 30px; cursor: pointer; z-index: 100001; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); border: 2px solid white; }
         .back-btn-urgent { background: #c00000; }
         .drive-shielder { position: fixed; top: 0; right: 0; width: 250px; height: 65px; background: transparent; z-index: 100000; }
     </style>
@@ -473,13 +464,24 @@
         <div class="drive-shielder"></div>
         <iframe id="pdfFrame" src=""></iframe>
     </div>
-    <div class="container">
+    <div class="container" id="mainContent">
         <table>
-            <colgroup><col style="width: 45px;"><col style="width: 60px;"><col style="width: 800px;"></colgroup>
-            <thead><tr><th></th><th>A</th><th>B</th></tr></thead>
+            <colgroup><col style="width: 80px;"><col style="width: 800px;"></colgroup>
+            <thead>
+                <tr>
+                    <th colspan="2" style="background-color: white; border: none; padding-bottom: 25px; text-align: left;">
+                        <div style="font-size: 26pt; font-weight: bold; color: #000; display: flex; align-items: center; gap: 15px;">
+                            พชร-ข่าวขายทอดตลาด(ต้นฉบับ) 
+                            <a href="https://line.me/R/ti/p/%40jrt3913j" target="_blank">
+                                <img src="https://scdn.line-apps.com/n/line_add_friends/btn/th.png" alt="เพิ่มเพื่อน" height="36" border="0" style="vertical-align: middle;">
+                            </a>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
             <tbody>
-                <tr><td class="sheet-cell">1</td><td colspan="2" class="header-new">ข่าวมาใหม่ ประจำวันที่ ${thaiDate}</td></tr>
-                <tr><td class="sheet-cell">2</td><td class="subheader-new" style="text-align: center;">ที่</td><td class="subheader-new">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td></tr>`;
+                <tr style="height: 80px;"><td colspan="2" class="header-new" style="text-align: left; font-size: 20pt; padding: 20px;">ข่าวมาใหม่ ประจำวันที่ ${thaiDate}</td></tr>
+                <tr style="height: 46px;"><td style="text-align: center; color: #ff9900; font-weight: bold;">ที่</td><td style="text-align: left; color: #ff9900; font-weight: bold;">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td></tr>`;
 
             let curDate = null;
             let count = 0;
@@ -487,17 +489,17 @@
                 if (f.date_thai !== curDate) {
                     curDate = f.date_thai;
                     count = 1;
-                    html += `<tr><td class="sheet-cell"></td><td colspan="2" class="date-group-new">วันที่ประมูล: ${curDate}</td></tr>`;
+                    html += `<tr style="height: 46px;"><td colspan="2" class="date-group-new">วันที่ประมูล: ${curDate}</td></tr>`;
                 } else {
                     count++;
                 }
-                html += `<tr class="data-row-new"><td class="sheet-cell"></td><td style="text-align: center;">${count}</td>
+                html += `<tr style="height: 46px;"><td style="text-align: center;">${count}</td>
                          <td><span class="link-fake" onclick="openSecureLink('${f.obf_url}')">${f.display_text}</span></td></tr>`;
             });
 
-            html += `<tr style="height: 30px;"><td colspan="3" style="border: none;"></td></tr>
-                     <tr><td class="sheet-cell"></td><td colspan="2" class="header-all">📅 ข่าวล่วงหน้า 3 เดือน (${allFiles.length} รายการ)</td></tr>
-                     <tr><td class="sheet-cell"></td><td class="subheader-all" style="text-align: center;">ที่</td><td class="subheader-all">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td></tr>`;
+            html += `<tr style="height: 40px;"><td colspan="2" style="border: none;"></td></tr>
+                     <tr style="height: 80px;"><td colspan="2" class="header-all" style="text-align: left; font-size: 20pt; padding: 20px;">📅 ข่าวล่วงหน้า 3 เดือน (${allFiles.length} รายการ)</td></tr>
+                     <tr style="height: 46px;"><td style="text-align: center; color: #03A9F4; font-weight: bold;">ที่</td><td style="text-align: left; color: #03A9F4; font-weight: bold;">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td></tr>`;
 
             curDate = null;
             count = 0;
@@ -505,11 +507,11 @@
                 if (f.date_thai !== curDate) {
                     curDate = f.date_thai;
                     count = 1;
-                    html += `<tr><td class="sheet-cell"></td><td colspan="2" class="date-group-all">วันที่ประมูล: ${curDate}</td></tr>`;
+                    html += `<tr style="height: 46px;"><td colspan="2" class="date-group-all-row">วันที่ประมูล: ${curDate}</td></tr>`;
                 } else {
                     count++;
                 }
-                html += `<tr class="data-row-all"><td class="sheet-cell"></td><td style="text-align: center;">${count}</td>
+                html += `<tr style="height: 46px;"><td style="text-align: center;">${count}</td>
                          <td><span class="link-fake" onclick="openSecureLink('${f.obf_url}')">${f.display_text}</span></td></tr>`;
             });
 
@@ -528,10 +530,22 @@
     </div>
     <div class="container">
         <table>
-            <colgroup><col style="width: 45px;"><col style="width: 60px;"><col style="width: 800px;"></colgroup>
+            <colgroup><col style="width: 80px;"><col style="width: 800px;"></colgroup>
+            <thead>
+                <tr>
+                    <th colspan="2" style="background-color: white; border: none; padding-bottom: 25px; text-align: left;">
+                        <div style="font-size: 26pt; font-weight: bold; color: #000; display: flex; align-items: center; gap: 15px;">
+                            พชร-ข่าวขายทอดตลาด(ต้นฉบับ) 
+                            <a href="https://line.me/R/ti/p/%40jrt3913j" target="_blank">
+                                <img src="https://scdn.line-apps.com/n/line_add_friends/btn/th.png" alt="เพิ่มเพื่อน" height="36" border="0" style="vertical-align: middle;">
+                            </a>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
             <tbody>
-                <tr><td></td><td colspan="2" class="header-urgent">🔥 ข่าวด่วน ประจำวันที่ ${thaiDate}</td></tr>
-                <tr><td></td><td class="subheader-urgent" style="text-align: center;">ที่</td><td class="subheader-urgent">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td></tr>`;
+                <tr style="height: 80px;"><td colspan="2" class="header-urgent" style="text-align: left; font-size: 20pt; padding: 20px;">🔥 ข่าวด่วน ประจำวันที่ ${thaiDate}</td></tr>
+                <tr style="height: 46px;"><td style="text-align: center; color: #c00000; font-weight: bold;">ที่</td><td style="text-align: left; color: #c00000; font-weight: bold;">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td></tr>`;
 
             let curDate = null;
             let count = 0;
@@ -539,11 +553,11 @@
                 if (f.date_thai !== curDate) {
                     curDate = f.date_thai;
                     count = 1;
-                    html += `<tr><td></td><td colspan="2" class="date-group-urgent">วันที่ประมูล: ${curDate}</td></tr>`;
+                    html += `<tr style="height: 46px;"><td colspan="2" class="date-group-urgent">วันที่ประมูล: ${curDate}</td></tr>`;
                 } else {
                     count++;
                 }
-                html += `<tr class="urgent-row"><td></td><td style="text-align: center;" class="highlight-urgent">${count}</td>
+                html += `<tr style="height: 46px;"><td style="text-align: center;">${count}</td>
                          <td class="highlight-urgent">🔥 <span class="link-fake" onclick="openSecureLink('${f.obf_url}')">${f.display_text}</span></td></tr>`;
             });
 
