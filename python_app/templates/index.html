@@ -4,161 +4,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Report Generator (Safe Mode)</title>
+    <title>ระบบสร้างรายงานข่าวประมูล</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f39c12;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --bg: #f5f7fa;
+        }
+
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #f0f2f5;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
         }
 
         .card {
             background: white;
-            padding: 2rem;
+            padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 600px;
         }
 
-        h1 {
-            color: #1a73e8;
-            margin-bottom: 1rem;
+        h2 {
+            margin-top: 0;
+            color: #333;
             text-align: center;
-            font-size: 1.8rem;
-        }
-
-        .desc {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 15px;
         }
 
         label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 5px;
             font-weight: bold;
             color: #555;
+            font-size: 0.9em;
         }
 
         input {
             width: 100%;
-            padding: 0.8rem;
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 8px;
+            border-radius: 6px;
+            font-family: inherit;
             box-sizing: border-box;
-            font-size: 0.95rem;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
         }
 
         button {
-            width: 100%;
-            padding: 1rem;
-            background: #1a73e8;
-            color: white;
+            padding: 12px;
             border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
+            border-radius: 6px;
+            color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 1rem;
+            transition: opacity 0.2s;
+            font-family: inherit;
+        }
+
+        #btnStandard {
+            background-color: var(--secondary);
+        }
+
+        #btnUrgent {
+            background-color: var(--danger);
         }
 
         button:hover {
-            background: #1557b0;
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
 
         #status {
-            margin-top: 1.2rem;
-            text-align: center;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 8px;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            word-break: break-all;
         }
 
         .success {
+            background: #d4edda;
             color: #155724;
-            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
         }
 
         .error {
+            background: #f8d7da;
             color: #721c24;
-            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
         }
 
-        .loading {
-            color: #0c5460;
-            background-color: #d1ecf1;
+        .hint {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 2px;
         }
     </style>
 </head>
 
 <body>
     <div class="card">
-        <h1>📰 Report Generator (Private)</h1>
-        <p class="desc">สร้างรายงานโดยดึงข้อมูลผ่าน Apps Script (ไม่ต้องแชร์โฟลเดอร์เป็นสาธารณะ)</p>
+        <h2>🚀 ระบบสร้างรายงานข่าวประมูล</h2>
 
         <div class="form-group">
-            <label>WebApp URL (จาก Google Apps Script)</label>
+            <label>📅 วันที่รายงาน (จะไปแสดงที่หัวตาราง)</label>
+            <input type="date" id="reportDate">
+        </div>
+
+        <div class="form-group">
+            <label>🔗 ลิ้งค์ Apps Script (WebApp URL)</label>
             <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+            <div class="hint">* URL เดียวกันสำหรับทุกประเภทข่าว หรือแยกตามโฟลเดอร์</div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+        <div class="form-group">
+            <label>📂 ID โฟลเดอร์: ข่าวมาใหม่</label>
+            <input type="text" id="folderNew" placeholder="ID โฟลเดอร์จาก Google Drive">
         </div>
 
         <div class="form-group">
-            <label>Secret Key (รหัสผ่านความปลอดภัย)</label>
-            <input type="password" id="secretKey" value="AUCTION_SECRET_123">
+            <label>📂 ID โฟลเดอร์: ข่าวทั้งหมด</label>
+            <input type="text" id="folderAll" placeholder="ID โฟลเดอร์จาก Google Drive">
         </div>
 
-        <button onclick="generateReport()">สร้างรายงานใหม่ไปที่ d:\web viewer</button>
+        <div class="form-group">
+            <label>📂 ID โฟลเดอร์: ข่าวด่วน</label>
+            <input type="text" id="folderUrgent" placeholder="ID โฟลเดอร์จาก Google Drive">
+        </div>
+
+        <div class="form-group"
+            style="background-color: #e8f4fd; padding: 15px; border-radius: 6px; border: 1px solid #b6d4fe; display: flex; align-items: center;">
+            <input type="checkbox" id="pushToGit" style="width: auto; margin-right: 10px; transform: scale(1.5);">
+            <label for="pushToGit" style="margin-bottom: 0; cursor: pointer;">🌐 อัปโหลดระบบขึ้น Git (เพื่อออนไลน์ผ่าน
+                Link)</label>
+        </div>
+
+        <div class="btn-group">
+            <button id="btnStandard" onclick="generate('standard')">🔥 สร้างรายงานปกติ<br>(ใหม่ + ทั้งหมด)</button>
+            <button id="btnUrgent" onclick="generate('urgent')">🚨 สร้างรายงานด่วน<br>(ข่าวด่วนอย่างเดียว)</button>
+        </div>
+
         <div id="status"></div>
     </div>
 
     <script>
-        async function generateReport() {
-            const scriptUrl = document.getElementById('scriptUrl').value;
-            const secretKey = document.getElementById('secretKey').value;
-            const status = document.getElementById('status');
+        // โหลดค่าที่เคยบันทึกไว้
+        const fields = ['scriptUrl', 'folderNew', 'folderAll', 'folderUrgent'];
 
-            if (!scriptUrl || !secretKey) {
-                status.className = 'error';
-                status.innerText = '⚠️ กรุณากรอกข้อมูลให้ครบถ้วน';
+        window.onload = () => {
+            fields.forEach(id => {
+                const val = localStorage.getItem(id);
+                if (val) document.getElementById(id).value = val;
+            });
+            const pushPref = localStorage.getItem('pushToGit');
+            if (pushPref === 'true') document.getElementById('pushToGit').checked = true;
+
+            // ตั้งค่าวันที่ปัจจุบันเป็น Default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reportDate').value = today;
+        };
+
+        async function generate(type) {
+            const statusDiv = document.getElementById('status');
+            const data = {
+                type: type,
+                report_date: document.getElementById('reportDate').value,
+                script_url: document.getElementById('scriptUrl').value,
+                folder_new: document.getElementById('folderNew').value,
+                folder_all: document.getElementById('folderAll').value,
+                folder_urgent: document.getElementById('folderUrgent').value,
+                push_to_git: document.getElementById('pushToGit').checked
+            };
+
+            // บันทึกลง LocalStorage
+            fields.forEach(id => localStorage.setItem(id, document.getElementById(id).value));
+            localStorage.setItem('pushToGit', document.getElementById('pushToGit').checked);
+
+            if (!data.script_url) {
+                showStatus("❌ กรุณากรอก WebApp URL", "error");
                 return;
             }
 
-            status.className = 'loading';
-            status.innerText = '⏳ กำลังดึงข้อมูลผ่าน Proxy... (อาจใช้เวลา 30-60 วินาที)';
+            // ปิดปุ่มชั่วคราว
+            document.getElementById('btnStandard').disabled = true;
+            document.getElementById('btnUrgent').disabled = true;
+            showStatus("⏳ กำลังประมวลผล... อาจใช้เวลา 1-2 นาที", "success");
 
             try {
                 const response = await fetch('/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        script_url: scriptUrl,
-                        secret_key: secretKey
-                    })
+                    body: JSON.stringify(data)
                 });
 
                 const result = await response.json();
+
                 if (result.status === 'success') {
-                    status.className = 'success';
-                    status.innerText = `✅ สร้างสำเร็จ! ไฟล์อยู่ที่: ${result.path}`;
+                    let msg = `✅ สร้างสำเร็จ!<br>ไฟล์อยู่ในเครื่อง: <a href="file:///${result.path}" target="_blank">${result.path}</a>`;
+
+                    if (result.git_url) {
+                        msg += `<br><br>🌍 <b>ลิ้งค์รายงานออนไลน์ (Git):</b> <br><a href="${result.git_url}" target="_blank">${result.git_url}</a>`;
+                    }
+
+                    if (result.sheet_url) {
+                        msg += `<br><br>📝 <b>Google Sheet:</b> <a href="${result.sheet_url}" target="_blank">${result.sheet_url}</a>`;
+                    }
+                    showStatus(msg, "success");
                 } else {
-                    status.className = 'error';
-                    status.innerText = `❌ ข้อผิดพลาด: ${result.message}`;
+                    showStatus(`❌ ข้อผิดพลาด: ${result.message}`, "error");
                 }
-            } catch (e) {
-                status.className = 'error';
-                status.innerText = '❌ เกิดข้อผิดพลาดในการเชื่อมต่อกับ Python Server';
+            } catch (error) {
+                showStatus(`❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error}`, "error");
+            } finally {
+                document.getElementById('btnStandard').disabled = false;
+                document.getElementById('btnUrgent').disabled = false;
             }
+        }
+
+        function showStatus(msg, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = msg;
+            statusDiv.className = type;
+            statusDiv.style.display = 'block';
         }
     </script>
 </body>

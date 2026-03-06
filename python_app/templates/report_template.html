@@ -38,31 +38,34 @@
             background-color: #ffffff;
         }
 
+        /* --- Google Sheets Header Styles --- */
         thead th {
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             border: 1px solid #c0c0c0;
             color: #444;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: normal;
-            height: 25px;
+            height: 20px;
             text-align: center;
             vertical-align: middle;
         }
 
         td {
-            border: 1px solid #e2e2e2;
-            padding: 0 10px;
+            border: 1px solid #c0c0c0;
+            padding: 4px 10px;
             word-wrap: break-word;
             overflow: hidden;
             font-size: 13pt;
-            line-height: normal;
+            line-height: 1.4;
+            vertical-align: middle;
         }
 
+        /* Column A (Index) */
         tr td:first-child {
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             color: #444;
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             width: 45px !important;
             border: 1px solid #c0c0c0;
         }
@@ -77,78 +80,107 @@
             color: #d11111;
         }
 
-        .header-row {
-            background-color: #ff9900;
+        /* --- Sections Style --- */
+
+        /* Orange Section (New News) */
+        .header-new {
+            background-color: #FB8C00;
             color: white;
             font-weight: bold;
+            font-size: 20pt;
+            padding: 20px !important;
         }
 
-        .date-group-row {
-            background-color: #eeeeee;
+        .subheader-new {
+            background-color: #f3f3f3;
+            color: #FB8C00;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .date-group-new {
+            background-color: #f3f3f3;
+            font-weight: bold;
+            font-size: 14pt;
+        }
+
+        .data-row-new {
+            background-color: #FFF2CC;
+            /* Light yellow from sheet */
+        }
+
+        /* Blue Section (All News) */
+        .header-all {
+            background-color: #03A9F4;
+            color: white;
+            font-weight: bold;
+            font-size: 20pt;
+            padding: 20px !important;
+        }
+
+        .subheader-all {
+            background-color: #f3f3f3;
+            color: #03A9F4;
             font-weight: bold;
         }
 
-        /* --- Modal Viewer Styles --- */
-        #pdfModal {
+        .date-group-all {
+            background-color: #E1F5FE;
+            /* Light blue */
+            font-weight: bold;
+            font-size: 14pt;
+        }
+
+        .data-row-all {
+            background-color: #ffffff;
+        }
+
+        .data-row-all:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        /* --- Full Screen PDF Wrapper --- */
+        #pdfViewerWrapper {
             display: none;
             position: fixed;
-            z-index: 9999;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            position: relative;
-            background-color: #fefefe;
-            margin: 2% auto;
-            padding: 0;
-            border: 1px solid #888;
-            width: 90%;
-            height: 90%;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .close-btn {
-            position: absolute;
-            right: -15px;
-            top: -15px;
-            width: 40px;
-            height: 40px;
-            background: #ff4444;
-            color: white;
-            border: 2px solid white;
-            border-radius: 50%;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            z-index: 10001;
-        }
-
-        .close-btn:hover {
-            background: #cc0000;
+            background: white;
+            z-index: 99999;
         }
 
         #pdfFrame {
             width: 100%;
             height: 100%;
             border: none;
-            border-radius: 8px;
         }
 
-        /* ป้องกัน Iframe แสดง Scrollbar ซ้อน */
-        .modal-body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
+        .back-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            padding: 10px 20px;
+            background: #FB8C00;
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 100001;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid white;
+        }
+
+        .drive-shielder {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 250px;
+            height: 65px;
+            background: transparent;
+            z-index: 100000;
         }
     </style>
     <script>
@@ -160,54 +192,49 @@
             }
         });
 
-        // ฟังก์ชันเปิด Modal และโหลด PDF
+        window.onpopstate = function (event) {
+            closePdfViewer();
+        };
+
         function openSecureLink(obf) {
             try {
                 const rawUrl = atob(obf);
-                // แปลง URL เป็นรูปแบบ Preview สำหรับ Iframe (ป้องกันการเห็นแถบเมนู Drive เต็ม)
                 let previewUrl = rawUrl;
                 if (rawUrl.includes('/view')) {
                     previewUrl = rawUrl.replace('/view', '/preview');
                 }
 
-                const modal = document.getElementById('pdfModal');
+                const wrapper = document.getElementById('pdfViewerWrapper');
                 const iframe = document.getElementById('pdfFrame');
-
                 iframe.src = previewUrl;
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden'; // ล็อค Scroll หน้าหลัก
+                wrapper.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+
+                history.pushState({ viewing: true }, "");
             } catch (e) {
                 console.error("Invalid link");
             }
         }
 
-        function closeModal() {
-            const modal = document.getElementById('pdfModal');
+        function closePdfViewer() {
+            const wrapper = document.getElementById('pdfViewerWrapper');
             const iframe = document.getElementById('pdfFrame');
-            iframe.src = ''; // เคลียร์ src เพื่อหยุดการโหลด
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto'; // คืนค่า Scroll
+            wrapper.style.display = 'none';
+            iframe.src = '';
+            document.body.style.overflow = 'auto';
         }
 
-        // ปิดเมื่อคลิกนอก Modal
-        window.onclick = function (event) {
-            const modal = document.getElementById('pdfModal');
-            if (event.target == modal) {
-                closeModal();
-            }
+        function goBackManually() {
+            window.history.back();
         }
     </script>
 </head>
 
 <body>
-    <!-- Modal Viewer -->
-    <div id="pdfModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <div class="modal-body">
-                <iframe id="pdfFrame" src=""></iframe>
-            </div>
-        </div>
+    <div id="pdfViewerWrapper">
+        <div class="back-btn" onclick="goBackManually()">← กลับไปหน้ารายงาน</div>
+        <div class="drive-shielder"></div>
+        <iframe id="pdfFrame" src=""></iframe>
     </div>
 
     <div class="container">
@@ -225,63 +252,73 @@
                 </tr>
             </thead>
             <tbody>
-                <tr style="height: 100px;">
+                <!-- ข่าวมาใหม่ Section -->
+                <tr>
                     <td class="sheet-cell">1</td>
-                    <td colspan="2" class="sheet-cell header-row"
-                        style="text-align: left; font-size: 20pt; padding: 20px;">
-                        ข่าวมาใหม่ ประจำวันที่ {{ thai_date }}
-                    </td>
+                    <td colspan="2" class="header-new">ข่าวมาใหม่ ประจำวันที่ {{ thai_date }}</td>
                 </tr>
-                <tr style="height: 40px;">
+                <tr>
                     <td class="sheet-cell">2</td>
-                    <td class="sheet-cell" style="text-align: center; color: #ff9900; font-weight: bold;">ที่</td>
-                    <td class="sheet-cell" style="text-align: left; color: #ff9900; font-weight: bold;">
-                        รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td>
+                    <td class="subheader-new" style="text-align: center;">ที่</td>
+                    <td class="subheader-new">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td>
                 </tr>
 
-                {% set state = {'date': None} %}
+                {% set state = {'date': None, 'count': 0} %}
                 {% for f in new_files %}
                 {% if f.date_thai != state.date %}
-                <tr style="height: 40px;">
-                    <td class="sheet-cell">{{ loop.index + 2 }}</td>
-                    <td colspan="2" class="sheet-cell date-group-row">วันที่ประมูล: {{ f.date_thai }}</td>
+                {% set _ = state.update({'date': f.date_thai, 'count': 1}) %}
+                <tr>
+                    <td class="sheet-cell"></td>
+                    <td colspan="2" class="date-group-new">วันที่ประมูล: {{ f.date_thai }}</td>
                 </tr>
-                {% set _ = state.update({'date': f.date_thai}) %}
+                {% else %}
+                {% set _ = state.update({'count': state.count + 1}) %}
                 {% endif %}
-                <tr style="height: 40px;">
-                    <td class="sheet-cell">{{ loop.index + 3 }}</td>
-                    <td class="sheet-cell" style="text-align: center;">{{ loop.index }}</td>
-                    <td class="sheet-cell">
+                <tr class="data-row-new">
+                    <td class="sheet-cell"></td>
+                    <td style="text-align: center;">{{ state.count }}</td>
+                    <td>
                         <span class="link-fake" onclick="openSecureLink('{{ f.obf_url }}')">
-                            {{ f.province }} {{ f.agency }} {{ f.items }}
+                            {{ f.display_text }}
                         </span>
                     </td>
                 </tr>
                 {% endfor %}
 
-                <tr style="height: 60px;">
-                    <td class="sheet-cell"></td>
-                    <td colspan="2" class="sheet-cell header-row"
-                        style="background-color: #4285f4; text-align: left; font-size: 16pt; padding: 15px;">
-                        คลังข่าว 90 วันข้างหน้า ({{ all_files|length }} รายการ)
-                    </td>
+                <!-- Space -->
+                <tr style="height: 30px;">
+                    <td colspan="3" style="border: none;"></td>
                 </tr>
 
-                {% set state_all = {'date': None} %}
+                <!-- ข่าวทั้งหมด Section -->
+                <tr>
+                    <td class="sheet-cell"></td>
+                    <td colspan="2" class="header-all">📅 ข่าวล่วงหน้า 3 เดือน ({{ all_files|length }} รายการ)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="sheet-cell"></td>
+                    <td class="subheader-all" style="text-align: center;">ที่</td>
+                    <td class="subheader-all">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td>
+                </tr>
+
+                {% set state_all = {'date': None, 'count': 0} %}
                 {% for f in all_files %}
                 {% if f.date_thai != state_all.date %}
-                <tr style="height: 40px;">
+                {% set _ = state_all.update({'date': f.date_thai, 'count': 1}) %}
+                <tr>
                     <td class="sheet-cell"></td>
-                    <td colspan="2" class="sheet-cell date-group-row">วันที่ประมูล: {{ f.date_thai }}</td>
+                    <td colspan="2" class="date-group-all">วันที่ประมูล: {{ f.date_thai }}</td>
                 </tr>
-                {% set _ = state_all.update({'date': f.date_thai}) %}
+                {% else %}
+                {% set _ = state_all.update({'count': state_all.count + 1}) %}
                 {% endif %}
-                <tr style="height: 40px;">
+                <tr class="data-row-all">
                     <td class="sheet-cell"></td>
-                    <td class="sheet-cell" style="text-align: center;">{{ loop.index }}</td>
-                    <td class="sheet-cell">
+                    <td style="text-align: center;">{{ state_all.count }}</td>
+                    <td>
                         <span class="link-fake" onclick="openSecureLink('{{ f.obf_url }}')">
-                            {{ f.province }} {{ f.agency }} {{ f.items }}
+                            {{ f.display_text }}
                         </span>
                     </td>
                 </tr>
