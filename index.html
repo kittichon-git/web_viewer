@@ -409,8 +409,11 @@
         /* Headers */
         .header-new { background-color: #ff9900; color: white; font-weight: bold; }
         .date-group-new { background-color: #eeeeee; font-weight: bold; }
+        .data-row-new { background-color: #FFF2CC; }
         .header-all { background-color: #03A9F4; color: white; font-weight: bold; }
         .date-group-all-row { background-color: #E1F5FE; font-weight: bold; }
+        .data-row-all { background-color: #ffffff; }
+        .data-row-all:nth-child(even) { background-color: #f8f9fa; }
         /* Urgent */
         .header-urgent { background-color: #c00000; color: white; font-weight: bold; }
         .date-group-urgent { background-color: #eeeeee; font-weight: bold; }
@@ -493,7 +496,7 @@
                 } else {
                     count++;
                 }
-                html += `<tr style="height: 46px;"><td style="text-align: center;">${count}</td>
+                html += `<tr class="data-row-new" style="height: 46px;"><td style="text-align: center;">${count}</td>
                          <td><span class="link-fake" onclick="openSecureLink('${f.obf_url}')">${f.display_text}</span></td></tr>`;
             });
 
@@ -511,7 +514,7 @@
                 } else {
                     count++;
                 }
-                html += `<tr style="height: 46px;"><td style="text-align: center;">${count}</td>
+                html += `<tr class="data-row-all" style="height: 46px;"><td style="text-align: center;">${count}</td>
                          <td><span class="link-fake" onclick="openSecureLink('${f.obf_url}')">${f.display_text}</span></td></tr>`;
             });
 
@@ -557,7 +560,7 @@
                 } else {
                     count++;
                 }
-                html += `<tr style="height: 46px;"><td style="text-align: center;">${count}</td>
+                html += `<tr class="urgent-row" style="height: 46px;"><td style="text-align: center;" class="highlight-urgent">${count}</td>
                          <td class="highlight-urgent">🔥 <span class="link-fake" onclick="openSecureLink('${f.obf_url}')">${f.display_text}</span></td></tr>`;
             });
 
