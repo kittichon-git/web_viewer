@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="th"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข่าวด่วน - 6 มีนาคม 2569</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #ffffff; margin: 0; padding: 0; color: #000000; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+        @media print { body { display: none !important; } }
+        .container { width: 100%; overflow-x: auto; padding: 20px; }
+        table { border-collapse: collapse; width: fit-content; min-width: 100%; table-layout: fixed; background-color: #ffffff; margin: 0 auto; }
+        td { border: 1px solid #e2e2e2; padding: 8px 10px; word-wrap: break-word; overflow: hidden; font-size: 13pt; line-height: 1.5; vertical-align: middle; }
+        .link-fake { color: #1155cc; text-decoration: underline; cursor: pointer; }
+        .link-fake:hover { color: #d11111; }
+        /* Headers */
+        .header-new { background-color: #ff9900; color: white; font-weight: bold; }
+        .date-group-new { background-color: #eeeeee; font-weight: bold; }
+        .header-all { background-color: #03A9F4; color: white; font-weight: bold; }
+        .date-group-all-row { background-color: #E1F5FE; font-weight: bold; }
+        /* Urgent */
+        .header-urgent { background-color: #c00000; color: white; font-weight: bold; }
+        .date-group-urgent { background-color: #eeeeee; font-weight: bold; }
+        .highlight-urgent { background-color: #fce4ec; }
+        
+        #pdfViewerWrapper { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 99999; }
+        #pdfFrame { width: 100%; height: 100%; border: none; }
+        .back-btn { position: fixed; top: 15px; left: 15px; padding: 10px 20px; background: #ff9900; color: white; border-radius: 30px; cursor: pointer; z-index: 100001; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); border: 2px solid white; }
+        .back-btn-urgent { background: #c00000; }
+        .drive-shielder { position: fixed; top: 0; right: 0; width: 250px; height: 65px; background: transparent; z-index: 100000; }
+    </style>
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 's' || e.key === 'p' || e.key === 'u' || e.key === 'i')) {
+                e.preventDefault(); return false;
+            }
+        });
+        window.onpopstate = function (event) { closePdfViewer(); };
+        function openSecureLink(obf) {
+            try {
+                const rawUrl = atob(obf);
+                let previewUrl = rawUrl;
+                if (rawUrl.includes('/view')) { previewUrl = rawUrl.replace('/view', '/preview'); }
+                const wrapper = document.getElementById('pdfViewerWrapper');
+                const iframe = document.getElementById('pdfFrame');
+                iframe.src = previewUrl;
+                wrapper.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                history.pushState({ viewing: true }, "");
+            } catch (e) { console.error("Invalid link"); }
+        }
+        function closePdfViewer() {
+            const wrapper = document.getElementById('pdfViewerWrapper');
+            const iframe = document.getElementById('pdfFrame');
+            wrapper.style.display = 'none';
+            iframe.src = '';
+            document.body.style.overflow = 'auto';
+        }
+        function goBackManually() { window.history.back(); }
+    </script>
+            </head><body>
+    <div id="pdfViewerWrapper">
+        <div class="back-btn back-btn-urgent" onclick="goBackManually()">← กลับไปหน้ารายงาน</div>
+        <div class="drive-shielder"></div>
+        <iframe id="pdfFrame" src=""></iframe>
+    </div>
+    <div class="container">
+        <table>
+            <colgroup><col style="width: 80px;"><col style="width: 800px;"></colgroup>
+            <thead>
+                <tr>
+                    <th colspan="2" style="background-color: white; border: none; padding-bottom: 25px; text-align: left;">
+                        <div style="font-size: 26pt; font-weight: bold; color: #000; display: flex; align-items: center; gap: 15px;">
+                            พชร-ข่าวขายทอดตลาด(ต้นฉบับ) 
+                            <a href="https://line.me/R/ti/p/%40jrt3913j" target="_blank">
+                                <img src="https://scdn.line-apps.com/n/line_add_friends/btn/th.png" alt="เพิ่มเพื่อน" height="36" border="0" style="vertical-align: middle;">
+                            </a>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height: 80px;"><td colspan="2" class="header-urgent" style="text-align: left; font-size: 20pt; padding: 20px;">🔥 ข่าวด่วน ประจำวันที่ 6 มีนาคม 2569</td></tr>
+                <tr style="height: 46px;"><td style="text-align: center; color: #c00000; font-weight: bold;">ที่</td><td style="text-align: left; color: #c00000; font-weight: bold;">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td></tr><tr style="height: 46px;"><td colspan="2" class="date-group-urgent">วันที่ประมูล: 6 มีนาคม 2569</td></tr><tr style="height: 46px;"><td style="text-align: center;">1</td>
+                         <td class="highlight-urgent">🔥 <span class="link-fake" onclick="openSecureLink('aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2ZpbGUvZC8xQzY0ZGFFLUNXWmp6YnNkNUpNcVR2eTQtYURFUlc4ZmEvdmlldz91c3A9ZHJpdmVzZGs=')">พิษณุโลก   รพ.พุทธชินราช   พัสดุชำรุด 629 รายการ</span></td></tr></tbody></table></div></body></html>
