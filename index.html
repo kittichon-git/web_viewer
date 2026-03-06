@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบสร้างรายงานข่าวประมูล (Serverless)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f39c12;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --bg: #f5f7fa;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: inherit;
+        }
+
+        #btnStandard {
+            background-color: var(--secondary);
+        }
+
+        #btnUrgent {
+            background-color: var(--danger);
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            word-break: break-all;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hint {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .github-box {
+            background-color: #f6f8fa;
+            border: 1px solid #d0d7de;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>🚀 ระบบสร้างรายงานข่าวประมูล<br><small style="font-size: 14px; color: #888;">(ทำงานผ่านเบราว์เซอร์
+                100%)</small></h2>
+
+        <div class="form-group">
+            <label>📅 วันที่รายงาน (จะไปแสดงที่หัวตาราง)</label>
+            <input type="date" id="reportDate">
+        </div>
+
+        <div class="form-group">
+            <label>🔗 ลิ้งค์ Apps Script (WebApp URL)</label>
+            <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+            <div class="hint">* URL เดียวกันสำหรับทุกประเภทข่าว หรือแยกตามโฟลเดอร์</div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+        <div class="form-group">
+            <label>📂 ID โฟลเดอร์: ข่าวมาใหม่</label>
+            <input type="text" id="folderNew" placeholder="ID โฟลเดอร์จาก Google Drive">
+        </div>
+
+        <div class="form-group">
+            <label>📂 ID โฟลเดอร์: ข่าวทั้งหมด</label>
+            <input type="text" id="folderAll" placeholder="ID โฟลเดอร์จาก Google Drive">
+        </div>
+
+        <div class="form-group">
+            <label>📂 ID โฟลเดอร์: ข่าวด่วน</label>
+            <input type="text" id="folderUrgent" placeholder="ID โฟลเดอร์จาก Google Drive">
+        </div>
+
+        <div class="github-box">
+            <div class="form-group" style="display: flex; align-items: center;">
+                <input type="checkbox" id="pushToGit" style="width: auto; margin-right: 10px; transform: scale(1.5);"
+                    onchange="toggleGitOptions()">
+                <label for="pushToGit" style="margin-bottom: 0; cursor: pointer;">🌐 อัปโหลดผ่าน GitHub ทันที</label>
+            </div>
+            <div id="gitOptions"
+                style="display: none; margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd;">
+                <div class="form-group">
+                    <label>บัญชี/ชื่อคลัง (Repo)</label>
+                    <input type="text" id="gitRepo" placeholder="เช่น kittichon-git/web_viewer">
+                </div>
+                <div class="form-group">
+                    <label>GitHub Token (PAT)</label>
+                    <input type="password" id="gitToken" placeholder="ghp_xxxxxxxxxxxxxxx">
+                    <div class="hint" style="color: #e74c3c;">* ระบบจะจำค่าไว้ในเบราว์เซอร์ของคุณเท่านั้น ปลอดภัย 100%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button id="btnStandard" onclick="processReport('standard')">🔥 สร้างรายงานปกติ<br>(ใหม่ + ทั้งหมด)</button>
+            <button id="btnUrgent" onclick="processReport('urgent')">🚨 สร้างรายงานด่วน<br>(ข่าวด่วนอย่างเดียว)</button>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const SECRET_KEY = "AUCTION_INTERNAL_SECRET_999";
+        const fields = ['scriptUrl', 'folderNew', 'folderAll', 'folderUrgent', 'gitRepo', 'gitToken'];
+
+        window.onload = () => {
+            fields.forEach(id => {
+                const val = localStorage.getItem(id);
+                if (val) document.getElementById(id).value = val;
+            });
+            const pushPref = localStorage.getItem('pushToGit');
+            if (pushPref === 'true') {
+                document.getElementById('pushToGit').checked = true;
+                toggleGitOptions();
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reportDate').value = today;
+
+            // Default Repo if empty
+            if (!document.getElementById('gitRepo').value) {
+                document.getElementById('gitRepo').value = "kittichon-git/web_viewer";
+            }
+        };
+
+        function toggleGitOptions() {
+            const isChecked = document.getElementById('pushToGit').checked;
+            document.getElementById('gitOptions').style.display = isChecked ? 'block' : 'none';
+        }
+
+        function getThaiDateStr(dateStr) {
+            const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const d = new Date(dateStr);
+            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+        }
+
+        function getTimestamp() {
+            const d = new Date();
+            const pad = (n) => n.toString().padStart(2, '0');
+            return `${pad(d.getDate())}${pad(d.getMonth() + 1)}${d.getFullYear()}${pad(d.getHours())}${pad(d.getMinutes())}`;
+        }
+
+        function showStatus(msg, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = msg;
+            statusDiv.className = type;
+            statusDiv.style.display = 'block';
+        }
+
+        async function processReport(type) {
+            const scriptUrl = document.getElementById('scriptUrl').value;
+            const pushToGit = document.getElementById('pushToGit').checked;
+
+            // Save preferences
+            fields.forEach(id => localStorage.setItem(id, document.getElementById(id).value));
+            localStorage.setItem('pushToGit', pushToGit);
+
+            if (!scriptUrl) {
+                showStatus("❌ กรุณากรอก WebApp URL", "error");
+                return;
+            }
+
+            document.getElementById('btnStandard').disabled = true;
+            document.getElementById('btnUrgent').disabled = true;
+            showStatus("⏳ กำลังดึงข้อมูลจาก Google Drive... อาจใช้เวลา 1-2 นาที", "success");
+
+            try {
+                // Fetch data from Google Apps Script
+                const qs = new URLSearchParams({
+                    key: SECRET_KEY,
+                    folder_new: document.getElementById('folderNew').value,
+                    folder_all: document.getElementById('folderAll').value,
+                    folder_urgent: document.getElementById('folderUrgent').value,
+                    report_date: document.getElementById('reportDate').value
+                });
+
+                const gasResponse = await fetch(`${scriptUrl}?${qs}`);
+                const gasData = await gasResponse.json();
+
+                if (gasData.status !== 'success') {
+                    throw new Error(gasData.message || "Proxy Error");
+                }
+
+                // Prepare HTML String
+                showStatus("⏳ กำลังสร้างหน้าเว็บรายงาน...", "success");
+                const thaiDateFull = getThaiDateStr(document.getElementById('reportDate').value);
+                const timestamp = getTimestamp();
+
+                let htmlContent = "";
+                let saveFilename = "";
+
+                if (type === 'urgent') {
+                    const urgentFiles = gasData.urgent_files || [];
+                    urgentFiles.forEach(f => {
+                        f.obf_url = btoa(unescape(encodeURIComponent(f.webViewLink)));
+                    });
+                    htmlContent = buildUrgentHtml(urgentFiles, thaiDateFull);
+                    saveFilename = `urgent_report_${timestamp}.html`;
+                } else {
+                    const newFiles = gasData.new_files || [];
+                    const allFiles = gasData.all_files || [];
+                    newFiles.forEach(f => f.obf_url = btoa(unescape(encodeURIComponent(f.webViewLink))));
+                    allFiles.forEach(f => f.obf_url = btoa(unescape(encodeURIComponent(f.webViewLink))));
+                    htmlContent = buildStandardHtml(newFiles, allFiles, thaiDateFull);
+                    saveFilename = `news_reports_${timestamp}.html`;
+                }
+
+                if (pushToGit) {
+                    showStatus("⏳ กำลังอัปโหลดขึ้นข้อ GitHub สู่โลกออนไลน์...", "success");
+                    const gitUrl = await pushToGitHubAPI(saveFilename, htmlContent);
+
+                    let msg = `✅ อัปโหลดขึ้น GitHub สำเร็จ!<br><br>🌍 <b>ลิ้งค์รายงานออนไลน์ (Git):</b> <br><a href="${gitUrl}" target="_blank">${gitUrl}</a>`;
+                    if (gasData.sheet_url) {
+                        msg += `<br><br>📝 <b>Google Sheet:</b> <a href="${gasData.sheet_url}" target="_blank">${gasData.sheet_url}</a>`;
+                    }
+                    showStatus(msg, "success");
+                } else {
+                    // Local Browser Download
+                    downloadLocalHtml(saveFilename, htmlContent);
+                    let msg = `✅ สร้างสำเร็จ!<br>โปรดตรวจสอบไฟล์ดาวน์โหลดของคุณ: <b>${saveFilename}</b>`;
+                    if (gasData.sheet_url) {
+                        msg += `<br><br>📝 <b>Google Sheet:</b> <a href="${gasData.sheet_url}" target="_blank">${gasData.sheet_url}</a>`;
+                    }
+                    showStatus(msg, "success");
+                }
+
+            } catch (error) {
+                showStatus(`❌ เกิดข้อผิดพลาด: ${error.message}`, "error");
+            } finally {
+                document.getElementById('btnStandard').disabled = false;
+                document.getElementById('btnUrgent').disabled = false;
+            }
+        }
+
+        function downloadLocalHtml(filename, content) {
+            const element = document.createElement('a');
+            const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+            element.href = URL.createObjectURL(blob);
+            element.download = filename;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        async function pushToGitHubAPI(filename, content) {
+            const repo = document.getElementById('gitRepo').value.trim();
+            const token = document.getElementById('gitToken').value.trim();
+
+            if (!repo || !token) {
+                throw new Error("กรุณากรอกข้อมูล GitHub Repo และ Token ให้ครบ");
+            }
+
+            // UTF-8 safe base64 encoding for API payload
+            const base64Content = btoa(unescape(encodeURIComponent(content)));
+            const apiUrl = `https://api.github.com/repos/${repo}/contents/${filename}`;
+
+            let sha = '';
+            // Try to get existing file SHA to allow overwrite (just in case)
+            try {
+                const getRes = await fetch(apiUrl, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                if (getRes.ok) {
+                    const getJson = await getRes.json();
+                    sha = getJson.sha;
+                }
+            } catch (e) { }
+
+            const body = {
+                message: `Auto-generate ${filename} via Serverless SPA`,
+                content: base64Content,
+                branch: 'master'
+            };
+            if (sha) body.sha = sha;
+
+            const res = await fetch(apiUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(`GitHub API Error: ${errorData.message}`);
+            }
+
+            // Extract username from repo string
+            const username = repo.split('/')[0];
+            const repoName = repo.split('/')[1];
+            return `https://${username}.github.io/${repoName}/${filename}`;
+        }
+
+        // --- HTML TEMPLATE GENERATORS ---
+
+        function getCommonHead(title) {
+            return `
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #ffffff; margin: 0; padding: 0; color: #000000; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+        @media print { body { display: none !important; } }
+        .container { width: 100%; overflow-x: auto; }
+        table { border-collapse: collapse; width: fit-content; min-width: 100%; table-layout: fixed; background-color: #ffffff; }
+        thead th { background-color: #ffffff; border: 1px solid #c0c0c0; color: #444; font-size: 11px; font-weight: normal; height: 20px; text-align: center; vertical-align: middle; }
+        td { border: 1px solid #c0c0c0; padding: 4px 10px; word-wrap: break-word; overflow: hidden; font-size: 13pt; line-height: 1.4; vertical-align: middle; }
+        tr td:first-child { background-color: #ffffff; color: #444; text-align: center; font-size: 11px; width: 45px !important; border: 1px solid #c0c0c0; }
+        .link-fake { color: #1155cc; text-decoration: underline; cursor: pointer; }
+        .link-fake:hover { color: #d11111; }
+        /* Headers */
+        .header-new { background-color: #FB8C00; color: white; font-weight: bold; font-size: 20pt; padding: 20px !important; }
+        .subheader-new { background-color: #f3f3f3; color: #FB8C00; font-weight: bold; text-align: left; }
+        .date-group-new { background-color: #f3f3f3; font-weight: bold; font-size: 14pt; }
+        .data-row-new { background-color: #FFF2CC; }
+        .header-all { background-color: #03A9F4; color: white; font-weight: bold; font-size: 20pt; padding: 20px !important; }
+        .subheader-all { background-color: #f3f3f3; color: #03A9F4; font-weight: bold; }
+        .date-group-all { background-color: #E1F5FE; font-weight: bold; font-size: 14pt; }
+        .data-row-all { background-color: #ffffff; }
+        .data-row-all:nth-child(even) { background-color: #f8f9fa; }
+        /* Urgent */
+        .header-urgent { background-color: #c00000; color: white; font-weight: bold; font-size: 20pt; padding: 20px !important; text-align: left; }
+        .subheader-urgent { background-color: #ffffff; color: #c00000; font-weight: bold; text-align: left; border: 1px solid #c0c0c0; }
+        .date-group-urgent { background-color: #ffffff; font-weight: bold; font-size: 14pt; border: 1px solid #c0c0c0; }
+        .highlight-urgent { background-color: #fce4ec; }
+        tr.urgent-row td:first-child { text-align: center; width: 45px !important; border: none; background-color: white; }
+        
+        #pdfViewerWrapper { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 99999; }
+        #pdfFrame { width: 100%; height: 100%; border: none; }
+        .back-btn { position: fixed; top: 15px; left: 15px; padding: 10px 20px; background: #FB8C00; color: white; border-radius: 30px; cursor: pointer; z-index: 100001; font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); border: 2px solid white; }
+        .back-btn-urgent { background: #c00000; }
+        .drive-shielder { position: fixed; top: 0; right: 0; width: 250px; height: 65px; background: transparent; z-index: 100000; }
+    </style>
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 's' || e.key === 'p' || e.key === 'u' || e.key === 'i')) {
+                e.preventDefault(); return false;
+            }
+        });
+        window.onpopstate = function (event) { closePdfViewer(); };
+        function openSecureLink(obf) {
+            try {
+                const rawUrl = atob(obf);
+                let previewUrl = rawUrl;
+                if (rawUrl.includes('/view')) { previewUrl = rawUrl.replace('/view', '/preview'); }
+                const wrapper = document.getElementById('pdfViewerWrapper');
+                const iframe = document.getElementById('pdfFrame');
+                iframe.src = previewUrl;
+                wrapper.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                history.pushState({ viewing: true }, "");
+            } catch (e) { console.error("Invalid link"); }
+        }
+        function closePdfViewer() {
+            const wrapper = document.getElementById('pdfViewerWrapper');
+            const iframe = document.getElementById('pdfFrame');
+            wrapper.style.display = 'none';
+            iframe.src = '';
+            document.body.style.overflow = 'auto';
+        }
+        function goBackManually() { window.history.back(); }
+    <\/script>
+            `;
+        }
+
+        function buildStandardHtml(newFiles, allFiles, thaiDate) {
+            let html = `<!DOCTYPE html><html lang="th"><head>${getCommonHead(`รายงานข่าวมาใหม่ - ${thaiDate}`)}</head><body>`;
+
+            html += `
+    <div id="pdfViewerWrapper">
+        <div class="back-btn" onclick="goBackManually()">← กลับไปหน้ารายงาน</div>
+        <div class="drive-shielder"></div>
+        <iframe id="pdfFrame" src=""></iframe>
+    </div>
+    <div class="container">
+        <table>
+            <colgroup><col style="width: 45px;"><col style="width: 60px;"><col style="width: 800px;"></colgroup>
+            <thead><tr><th></th><th>A</th><th>B</th></tr></thead>
+            <tbody>
+                <tr><td class="sheet-cell">1</td><td colspan="2" class="header-new">ข่าวมาใหม่ ประจำวันที่ ${thaiDate}</td></tr>
+                <tr><td class="sheet-cell">2</td><td class="subheader-new" style="text-align: center;">ที่</td><td class="subheader-new">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td></tr>`;
+
+            let curDate = null;
+            let count = 0;
+            newFiles.forEach(f => {
+                if (f.date_thai !== curDate) {
+                    curDate = f.date_thai;
+                    count = 1;
+                    html += `<tr><td class="sheet-cell"></td><td colspan="2" class="date-group-new">วันที่ประมูล: ${curDate}</td></tr>`;
+                } else {
+                    count++;
+                }
+                html += `<tr class="data-row-new"><td class="sheet-cell"></td><td style="text-align: center;">${count}</td>
+                         <td><span class="link-fake" onclick="openSecureLink('${f.obf_url}')">${f.display_text}</span></td></tr>`;
+            });
+
+            html += `<tr style="height: 30px;"><td colspan="3" style="border: none;"></td></tr>
+                     <tr><td class="sheet-cell"></td><td colspan="2" class="header-all">📅 ข่าวล่วงหน้า 3 เดือน (${allFiles.length} รายการ)</td></tr>
+                     <tr><td class="sheet-cell"></td><td class="subheader-all" style="text-align: center;">ที่</td><td class="subheader-all">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td></tr>`;
+
+            curDate = null;
+            count = 0;
+            allFiles.forEach(f => {
+                if (f.date_thai !== curDate) {
+                    curDate = f.date_thai;
+                    count = 1;
+                    html += `<tr><td class="sheet-cell"></td><td colspan="2" class="date-group-all">วันที่ประมูล: ${curDate}</td></tr>`;
+                } else {
+                    count++;
+                }
+                html += `<tr class="data-row-all"><td class="sheet-cell"></td><td style="text-align: center;">${count}</td>
+                         <td><span class="link-fake" onclick="openSecureLink('${f.obf_url}')">${f.display_text}</span></td></tr>`;
+            });
+
+            html += `</tbody></table></div></body></html>`;
+            return html;
+        }
+
+        function buildUrgentHtml(urgentFiles, thaiDate) {
+            let html = `<!DOCTYPE html><html lang="th"><head>${getCommonHead(`ข่าวด่วน - ${thaiDate}`)}</head><body>`;
+
+            html += `
+    <div id="pdfViewerWrapper">
+        <div class="back-btn back-btn-urgent" onclick="goBackManually()">← กลับไปหน้ารายงาน</div>
+        <div class="drive-shielder"></div>
+        <iframe id="pdfFrame" src=""></iframe>
+    </div>
+    <div class="container">
+        <table>
+            <colgroup><col style="width: 45px;"><col style="width: 60px;"><col style="width: 800px;"></colgroup>
+            <tbody>
+                <tr><td></td><td colspan="2" class="header-urgent">🔥 ข่าวด่วน ประจำวันที่ ${thaiDate}</td></tr>
+                <tr><td></td><td class="subheader-urgent" style="text-align: center;">ที่</td><td class="subheader-urgent">รายละเอียดการประมูล (คลิกเพื่อดูไฟล์)</td></tr>`;
+
+            let curDate = null;
+            let count = 0;
+            urgentFiles.forEach(f => {
+                if (f.date_thai !== curDate) {
+                    curDate = f.date_thai;
+                    count = 1;
+                    html += `<tr><td></td><td colspan="2" class="date-group-urgent">วันที่ประมูล: ${curDate}</td></tr>`;
+                } else {
+                    count++;
+                }
+                html += `<tr class="urgent-row"><td></td><td style="text-align: center;" class="highlight-urgent">${count}</td>
+                         <td class="highlight-urgent">🔥 <span class="link-fake" onclick="openSecureLink('${f.obf_url}')">${f.display_text}</span></td></tr>`;
+            });
+
+            html += `</tbody></table></div></body></html>`;
+            return html;
+        }
+    </script>
+</body>
+
+</html>
